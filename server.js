@@ -1,12 +1,20 @@
 import express from "express";
-import { getMessages } from "./controllers/messages.controller.js";
+import path from "path";
 import friendsRouter from "./routes/friends.route.js";
 import messagesRouter from "./routes/messages.route.js";
+import { fileURLToPath } from "url";
+
 
 
 const app = express();
 const PORT = 3000;
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
 
 
 app.use((req, res, next) => {
@@ -18,10 +26,15 @@ app.use((req, res, next) => {
     console.log(`Time: ${delta}ms`);
 })
 
+app.use("/site", express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.render("index", {
+        title: "Ice Skating",
+        caption: "What a wonderful day!",
+    })
 });
 
 app.use("/friends", friendsRouter);
